@@ -16,7 +16,7 @@ class TextWrapper {
     }
 }
 
-export class component {
+export class Component {
     constructor() {
         this.props = Object.create(null)
         this.children = []
@@ -47,16 +47,25 @@ export function createElement(type, attributes, ...children) {
     for (let p in attributes) {
         e.setAttribute(p, attributes[p])
     }
-    console.log('children', children)
-    for (let child of children) {
-        if (typeof child === 'string') {
-            child = new TextWrapper(child)
+
+    let insertChildren = (children) => {
+        for (let child of children) {
+            if (typeof child === 'string') {
+                child = new TextWrapper(child)
+            }
+            if (Array.isArray(child)) {
+                insertChildren(child)
+            } else {
+                e.appendChild(child)
+            }
         }
-        e.appendChild(child)
     }
+
+    insertChildren(children)
+
     return e
 }
 
 export function render(component, parentElement) {
-    parentElement.appendChild(component)
+    parentElement.appendChild(component.root)
 }
